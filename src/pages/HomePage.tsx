@@ -1,5 +1,4 @@
 import MovieCarousel from '../components/Carousel';
-import { NavBar } from '../components/NavBar';
 import MovieRow from '../components/MovieRow';
 import { useMovies } from '../Hooks/useMovies';
 import { useFavoriteMoviesStore } from '../stores/favorites.store';
@@ -16,8 +15,7 @@ export const HomePage = () => {
   const { favorites, toggleFavorite } = useFavoriteMoviesStore();
 
   return (
-    <div className="min-h-screen bg-background">
-      <NavBar favorites={favorites} />
+    <>
       <section className="mb-12 w-full">
         <MovieCarousel
           movies={nowPlayingQuery.data || []}
@@ -65,6 +63,6 @@ export const HomePage = () => {
           />
         </section>
       </div>
-    </div>
+    </>
   );
 };
