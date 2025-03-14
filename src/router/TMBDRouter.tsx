@@ -11,7 +11,7 @@ const TMBDRouter = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/category" element={<CategoryPage />} />
-        <Route path="/category" element={<FavoritesPage />} />
+        <Route path="/favorites" element={<FavoritesPage />} />
         <Route path="/category/:id" element={<MoviePage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
