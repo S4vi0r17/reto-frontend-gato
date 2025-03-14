@@ -11,7 +11,7 @@ export const topRatedMoviesAction = async ({
   limit = 10,
 }: Options): Promise<Movie[]> => {
   try {
-    const { data } = await movieApi.get<MovieResponse>('/top_rated', {
+    const { data } = await movieApi.get<MovieResponse>('/movie/top_rated', {
       params: {
         page,
         limit,
