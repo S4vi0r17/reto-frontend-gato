@@ -3,6 +3,7 @@ import { nowPlayingMoviesAction } from '../actions/movies/now-playing.action';
 import { popularMoviesAction } from '../actions/movies/popular.action';
 import { topRatedMoviesAction } from '../actions/movies/top-rated.action';
 import { upcomingMoviesAction } from '../actions/movies/upcoming.action';
+import { genresMoviesAction } from '../actions/movies/genres.action';
 
 export const useMovies = () => {
   const nowPlayingQuery = useQuery({
@@ -37,5 +38,17 @@ export const useMovies = () => {
     staleTime: 1000 * 60 * 60 * 24, // 24 hours
   });
 
-  return { nowPlayingQuery, popularQuery, topRatedQuery, upcomingQuery };
+  const genresQuery = useQuery({
+    queryKey: ['movies', 'genres'],
+    queryFn: genresMoviesAction,
+    staleTime: 1000 * 60 * 60 * 24, // 24 hours
+  });
+
+  return {
+    nowPlayingQuery,
+    popularQuery,
+    topRatedQuery,
+    upcomingQuery,
+    genresQuery,
+  };
 };
