@@ -1,45 +1,51 @@
 import MovieCarousel from '../components/Carousel';
 import { NavBar } from '../components/NavBar';
 import MovieRow from '../components/MovieRow';
-import { useTMDB } from '../Hooks/useTMDB';
 import { useMovies } from '../Hooks/useMovies';
+import { useFavoriteMoviesStore } from '../stores/favorites.store';
 
 export const HomePage = () => {
-  const { nowPlayingQuery, popularQuery, topRatedQuery, upcomingQuery } =
-    useMovies();
-  const { genres, favorites, toggleFavorite } = useTMDB();
+  const {
+    nowPlayingQuery,
+    popularQuery,
+    topRatedQuery,
+    upcomingQuery,
+    genresQuery,
+  } = useMovies();
+
+  const { favorites, toggleFavorite } = useFavoriteMoviesStore();
 
   return (
     <div className="min-h-screen bg-background">
-      <NavBar />
+      <NavBar favorites={favorites} />
       <section className="mb-12 w-full">
         <MovieCarousel
           movies={nowPlayingQuery.data || []}
-          genres={genres}
+          genres={genresQuery.data || []}
           favorites={favorites}
           toggleFavorite={toggleFavorite}
         />
       </section>
       <div className="container px-4 mx-auto">
         <section className="mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">Películas Populares</h2>
-          </div>
+          <h2 className="text-2xl font-bold">Películas Populares</h2>
 
           <MovieRow
             movies={popularQuery.data || []}
-            genres={genres}
+            genres={genresQuery.data || []}
             favorites={favorites}
             toggleFavorite={toggleFavorite}
           />
         </section>
 
         <section className="mb-12">
-          <h2 className="mb-6 text-2xl font-bold">Mejor Calificadas</h2>
+          <h2 className="mb-6 text-2xl font-bold">
+            Mejor Calificadas ( Infinity Scroll )
+          </h2>
 
           <MovieRow
             movies={topRatedQuery.data?.pages.flat() || []}
-            genres={genres}
+            genres={genresQuery.data || []}
             favorites={favorites}
             toggleFavorite={toggleFavorite}
             loading={topRatedQuery.isFetchingNextPage} // Para mostrar el loader
@@ -53,7 +59,7 @@ export const HomePage = () => {
 
           <MovieRow
             movies={upcomingQuery.data || []}
-            genres={genres}
+            genres={genresQuery.data || []}
             favorites={favorites}
             toggleFavorite={toggleFavorite}
           />

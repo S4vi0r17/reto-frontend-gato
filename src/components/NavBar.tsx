@@ -1,8 +1,13 @@
 import { Film, Heart, ListFilter, Moon, Sun } from 'lucide-react';
 import { Link } from 'react-router';
+import { Movie } from '../interfaces/movieResponse';
 
-export const NavBar = () => {
-  const favoritesCount = 2;
+interface Props {
+  favorites: Movie[];
+}
+
+export const NavBar = ({ favorites }: Props) => {
+  const favoritesCount = favorites.length;
   const theme = 'dark';
 
   return (
