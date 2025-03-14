@@ -1,4 +1,4 @@
-import MovieCarousel from '../components/Carousel';
+import MovieCarousel from '../components/MovieCarousel';
 import MovieRow from '../components/MovieRow';
 import { useMovies } from '../Hooks/useMovies';
 import { useFavoriteMoviesStore } from '../stores/favorites.store';

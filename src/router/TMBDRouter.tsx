@@ -1,10 +1,10 @@
 import { BrowserRouter, Route, Routes } from 'react-router';
-import { HomePage } from '../pages/HomePage';
-import { MoviePage } from '../pages/MoviePage';
-import { CategoryPage } from '../pages/CategoryPage';
-import { NotFoundPage } from '../pages/NotFoundPage';
-import { FavoritesPage } from '../pages/FavoritesPage';
-import { MainLayout } from '../layouts/MainLayout';
+import { HomePage } from '../movies/pages/HomePage';
+import { MoviePage } from '../movies/pages/MoviePage';
+import { CategoryPage } from '../movies/pages/CategoryPage';
+import { NotFoundPage } from '../common/pages/NotFoundPage';
+import { FavoritesPage } from '../movies/pages/FavoritesPage';
+import { MainLayout } from '@/movies/layouts/MainLayout';
 
 const TMBDRouter = () => {
   return (

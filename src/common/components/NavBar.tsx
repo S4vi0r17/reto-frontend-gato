@@ -1,6 +1,6 @@
 import { Film, Heart, ListFilter, Moon, Sun } from 'lucide-react';
 import { Link } from 'react-router';
-import { Movie } from '../interfaces/movieResponse';
+import { Movie } from '../../interfaces/movieResponse';
 
 interface Props {
   favorites: Movie[];

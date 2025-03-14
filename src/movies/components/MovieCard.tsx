@@ -14,13 +14,12 @@ export default function MovieCard({
   isFavorite,
   toggleFavorite,
 }: Props) {
-  // Obtener los nombres de los géneros para esta película
   const movieGenres = genres
     .filter((genre) => movie.genre_ids.includes(genre.id))
     .map((genre) => genre.name)
     .slice(0, 2);
 
-  // Formatear la fecha de lanzamiento
+  // Formatear la fecha
   const formatDate = (dateString: Date) => {
     if (!dateString) return 'Fecha desconocida';
 

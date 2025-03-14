@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import MovieCard from './MovieCard';
-import { Genre, Movie } from '../interfaces/movieResponse';
+import { Genre, Movie } from '../../interfaces/movieResponse';
 
 interface MovieRowProps {
   movies: Movie[];

@@ -1,7 +1,7 @@
 import { Heart } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Genre, Movie } from '../interfaces/movieResponse';
+import { Genre, Movie } from '../../interfaces/movieResponse';
 
 interface Props {
   movies: Movie[];
