@@ -5,15 +5,10 @@ interface Props {
   movie: Movie;
   genres: Genre[];
   isFavorite: boolean;
-  toggleFavorite: (movie: Movie) => void;
 }
 
-export default function MovieCard({
-  movie,
-  genres,
-  isFavorite,
-  toggleFavorite,
-}: Props) {
+export default function MovieCard({ movie, genres }: Props) {
+  const isFavorite = false;
   // Obtener los nombres de los géneros para esta película
   const movieGenres = genres
     .filter((genre) => movie.genre_ids.includes(genre.id))
@@ -49,7 +44,6 @@ export default function MovieCard({
         )}
 
         <button
-          onClick={() => toggleFavorite(movie)}
           className="absolute top-2 right-2 p-2 bg-background/80 backdrop-blur-sm rounded-full transition-colors hover:bg-background"
           aria-label={isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'}
         >
