@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
-import MovieCard from './MovieCard';
-import { Movie, Genre } from '../interfaces/movieResponse';
 import { Link } from 'react-router';
+import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { Movie, Genre } from '../interfaces/movieResponse';
+import MovieCard from './MovieCard';
 
-interface MovieRowProps {
+interface Props {
+  title: string;
   movies: Movie[];
   genres: Genre[];
   favorites: Movie[];
@@ -15,7 +16,8 @@ interface MovieRowProps {
   hasNextPage?: boolean;
 }
 
-export default function MovieRow({
+export const MoviesRow = ({
+  title,
   movies,
   genres,
   favorites,
@@ -23,7 +25,7 @@ export default function MovieRow({
   loading = false,
   fetchNextPage,
   hasNextPage,
-}: MovieRowProps) {
+}: Props) => {
   const rowRef = useRef<HTMLDivElement>(null);
   const isLoading = useRef(false);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -40,10 +42,11 @@ export default function MovieRow({
     const intervalId = setInterval(() => {
       isLoading.current = false;
     }, 200);
+
     return () => clearInterval(intervalId);
   }, [hasInfiniteScroll, movies]);
 
-  // Comprobar si se debe mostrar la flecha izquierda
+  // Comprobar si se deben mostrar las flecha
   const checkScrollPosition = () => {
     if (rowRef.current) {
       setShowLeftArrow(rowRef.current.scrollLeft > 0);
@@ -54,6 +57,7 @@ export default function MovieRow({
     }
   };
 
+  // pendiente de los cambios de scroll
   useEffect(() => {
     const row = rowRef.current;
     if (row) {
@@ -69,13 +73,10 @@ export default function MovieRow({
     // Si no hay infinite scroll habilitado o ya estamos cargando, salimos
     if (!hasInfiniteScroll || isLoading.current || loading) return;
 
-    const target = e.currentTarget;
-    const contentOffset = target.scrollLeft;
-    const contentSize = target.scrollWidth;
-    const layoutMeasurement = target.clientWidth;
+    const { scrollLeft, scrollWidth, clientWidth } = e.currentTarget; // === target
 
     // Cargar más cuando nos acercamos al final (600px antes del final)
-    const isEndReached = contentOffset + layoutMeasurement + 600 >= contentSize;
+    const isEndReached = scrollLeft + clientWidth + 600 >= scrollWidth;
 
     if (isEndReached) {
       isLoading.current = true;
@@ -106,59 +107,63 @@ export default function MovieRow({
   }
 
   return (
-    <div
-      className="relative group"
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
-    >
-      <div
-        ref={rowRef}
-        className="flex gap-4 pb-4 overflow-x-auto scrollbar-hide snap-x"
-        onScroll={handleScroll}
-      >
-        {movies.map((movie, index) => (
-          <Link
-            to={`/movie/${movie.id}`}
-            key={`${movie.id}-${index}`}
-            className="flex-shrink-0 w-[220px] snap-start"
-          >
-            <MovieCard
-              movie={movie}
-              genres={genres}
-              isFavorite={favorites.some((fav) => fav.id === movie.id)}
-              toggleFavorite={toggleFavorite}
-            />
-          </Link>
-        ))}
+    <section className="mb-12">
+      <h2 className="mb-6 text-2xl font-bold">{title}</h2>
 
-        {/* Indicador de carga solo para infinite scroll */}
-        {hasInfiniteScroll && loading && (
-          <div className="flex-shrink-0 w-[100px] flex items-center justify-center">
-            <Loader2 className="w-8 h-8 animate-spin text-accent" />
-          </div>
+      <div
+        className="relative group"
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+      >
+        <div
+          ref={rowRef}
+          className="flex gap-4 pb-4 overflow-x-auto scrollbar-hide snap-x"
+          onScroll={handleScroll}
+        >
+          {movies.map((movie, index) => (
+            <Link
+              to={`/movie/${movie.id}`}
+              key={`${movie.id}-${index}`}
+              className="flex-shrink-0 w-[220px] snap-start"
+            >
+              <MovieCard
+                movie={movie}
+                genres={genres}
+                isFavorite={favorites.some((fav) => fav.id === movie.id)}
+                toggleFavorite={toggleFavorite}
+              />
+            </Link>
+          ))}
+
+          {/* Indicador de carga solo para infinite scroll */}
+          {hasInfiniteScroll && loading && (
+            <div className="flex-shrink-0 w-[100px] flex items-center justify-center">
+              <Loader2 className="w-8 h-8 animate-spin text-accent" />
+            </div>
+          )}
+        </div>
+
+        {/* Flechas de navegación */}
+        {showLeftArrow && (isHovering || movies.length > 5) && (
+          <button
+            onClick={() => scroll('left')}
+            className="absolute left-0 top-1/2 -translate-y-1/2 p-2 rounded-full bg-background/80 text-foreground backdrop-blur-sm shadow-md z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+            aria-label="Desplazar a la izquierda"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+        )}
+
+        {showRightArrow && (isHovering || movies.length > 5) && (
+          <button
+            onClick={() => scroll('right')}
+            className="absolute right-0 top-1/2 -translate-y-1/2 p-2 rounded-full bg-background/80 text-foreground backdrop-blur-sm shadow-md z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+            aria-label="Desplazar a la derecha"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
         )}
       </div>
-
-      {/* Flechas de navegación */}
-      {showLeftArrow && (isHovering || movies.length > 5) && (
-        <button
-          onClick={() => scroll('left')}
-          className="absolute left-0 top-1/2 -translate-y-1/2 p-2 rounded-full bg-background/80 text-foreground backdrop-blur-sm shadow-md z-10 opacity-0 group-hover:opacity-100 transition-opacity"
-          aria-label="Desplazar a la izquierda"
-        >
-          <ChevronLeft className="w-6 h-6" />
-        </button>
-      )}
-
-      {showRightArrow && (isHovering || movies.length > 5) && (
-        <button
-          onClick={() => scroll('right')}
-          className="absolute right-0 top-1/2 -translate-y-1/2 p-2 rounded-full bg-background/80 text-foreground backdrop-blur-sm shadow-md z-10 opacity-0 group-hover:opacity-100 transition-opacity"
-          aria-label="Desplazar a la derecha"
-        >
-          <ChevronRight className="w-6 h-6" />
-        </button>
-      )}
-    </div>
+    </section>
   );
-}
+};
