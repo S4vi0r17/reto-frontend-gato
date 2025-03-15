@@ -1,11 +1,34 @@
-import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useEffect } from 'react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Filter,
+  SortAsc,
+  Check,
+  ChevronDown,
+} from 'lucide-react';
 import MovieCard from './MovieCard';
-import { Modal } from '../../common/components/Modal';
-import { Genre, Movie } from '../interfaces/movieResponse';
+import type { Genre, Movie } from '../interfaces/movieResponse';
 import { usePagination } from '@/common';
+import { useFavoriteModal } from '../Hooks/useFavoriteModal';
+import { useFilterSort } from '../Hooks/useFilterSort';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
-interface MovieGridProps {
+interface Props {
   genres: Genre[];
   favorites: Movie[];
   toggleFavorite: (movie: Movie) => void;
@@ -19,10 +42,23 @@ export default function MovieGrid({
   toggleFavorite,
   title,
   itemsPerPage = 12,
-}: MovieGridProps) {
-  // Estado para el diálogo de confirmación
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [movieToRemove, setMovieToRemove] = useState<Movie | null>(null);
+}: Props) {
+  const {
+    isConfirmOpen,
+    openModalForFavorite,
+    confirmRemoveFavorite,
+    cancelRemoveFavorite,
+  } = useFavoriteModal(toggleFavorite);
+
+  const {
+    selectedGenreIds,
+    sortOption,
+    setSortOption,
+    clearFilters,
+    handleGenreToggle,
+    getSortOptionText,
+    filteredAndSortedMovies,
+  } = useFilterSort(favorites);
 
   const {
     currentPage,
@@ -31,72 +67,31 @@ export default function MovieGrid({
     goToPreviousPage,
     goToPage,
     getPageNumbers,
+    resetToFirstPage,
   } = usePagination({
-    totalItems: favorites.length,
+    totalItems: filteredAndSortedMovies.length,
     itemsPerPage,
     initialPage: 1,
   });
 
-  // Efecto para manejar que el body no se pueda desplazar cuando el modal está abierto
+  // Reiniciar la paginación al cambiar filtros u orden
   useEffect(() => {
-    if (isConfirmOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
+    resetToFirstPage();
+  }, [selectedGenreIds, sortOption, resetToFirstPage]);
 
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isConfirmOpen]);
-
-  // Efecto para cerrar el modal con la tecla Escape
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsConfirmOpen(false);
-      }
-    };
-
-    if (isConfirmOpen) {
-      window.addEventListener('keydown', handleEscape);
-    }
-
-    return () => {
-      window.removeEventListener('keydown', handleEscape);
-    };
-  }, [isConfirmOpen]);
-
-  // Calcular los índices para las películas de la página actual
+  // Calcular las películas a mostrar en la página actual
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = Math.min(startIndex + itemsPerPage, favorites.length);
-  const currentMovies = favorites.slice(startIndex, endIndex);
+  const currentMovies = filteredAndSortedMovies.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
-  // Función para manejar el clic en el corazón de favoritos
   const handleFavoriteToggle = (movie: Movie) => {
-    // Si la película ya está en favoritos (se intenta quitar)
     if (favorites.some((fav) => fav.id === movie.id)) {
-      setMovieToRemove(movie);
-      setIsConfirmOpen(true);
+      openModalForFavorite(movie);
     } else {
-      // Si se está añadiendo a favoritos, no mostrar confirmación
       toggleFavorite(movie);
     }
-  };
-
-  // Confirmar la eliminación del favorito
-  const confirmRemoveFavorite = () => {
-    if (movieToRemove) {
-      toggleFavorite(movieToRemove);
-      setMovieToRemove(null);
-    }
-    setIsConfirmOpen(false);
-  };
-
-  // Cancelar la eliminación
-  const cancelRemoveFavorite = () => {
-    setMovieToRemove(null);
-    setIsConfirmOpen(false);
   };
 
   if (favorites.length === 0) {
@@ -111,72 +106,157 @@ export default function MovieGrid({
 
   return (
     <div className="w-full px-4 py-8 mx-auto sm:container sm:px-6 md:px-8">
-      {title && (
-        <h2 className="mb-4 text-xl font-bold sm:text-2xl md:mb-6">{title}</h2>
-      )}
+      {title && <h2 className="text-xl font-bold sm:text-2xl mb-4">{title}</h2>}
 
-      {isConfirmOpen && (
-        <Modal
-          cancelRemoveFavorite={cancelRemoveFavorite}
-          confirmRemoveFavorite={confirmRemoveFavorite}
-          movieToRemove={movieToRemove}
-        />
-      )}
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        {/* Dropdown de Ordenamiento */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              className="w-full sm:w-[180px] justify-between"
+            >
+              <SortAsc className="h-4 w-4" />
+              {getSortOptionText(sortOption)}
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuItem onSelect={() => setSortOption('none')}>
+              Sin ordenar
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => setSortOption('popularity')}>
+              Más populares
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => setSortOption('rating')}>
+              Mejor calificadas
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => setSortOption('date')}>
+              Más recientes
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-      <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-        {currentMovies.map((movie) => (
-          <MovieCard
-            key={movie.id}
-            movie={movie}
-            genres={genres}
-            isFavorite={favorites.some((fav) => fav.id === movie.id)}
-            toggleFavorite={handleFavoriteToggle}
-          />
-        ))}
+        {/* Dropdown de Filtros */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              className="w-full sm:w-[180px] justify-between"
+            >
+              <Filter className="h-4 w-4" />
+              Filtrar
+              {selectedGenreIds.length > 0 && (
+                <span className="ml-1 rounded-full bg-primary w-5 h-5 flex items-center justify-center text-xs">
+                  {selectedGenreIds.length}
+                </span>
+              )}
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-64 p-4">
+            <div className="flex items-center justify-between mb-3">
+              <span className="font-medium">Géneros</span>
+              <Button variant="ghost" size="sm" onClick={clearFilters}>
+                Limpiar filtros
+              </Button>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {genres.map((genre) => (
+                <div
+                  key={genre.id}
+                  className="flex items-center space-x-2 cursor-pointer"
+                  onClick={() => handleGenreToggle(genre.id)}
+                >
+                  <div
+                    className={`w-4 h-4 rounded border flex items-center justify-center cursor-pointer ${
+                      selectedGenreIds.includes(genre.id)
+                        ? 'bg-primary border-primary'
+                        : 'border-gray-300'
+                    }`}
+                  >
+                    {selectedGenreIds.includes(genre.id) && (
+                      <Check className="h-3 w-3 text-white" />
+                    )}
+                  </div>
+                  <span className="text-sm truncate">{genre.name}</span>
+                </div>
+              ))}
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
-      {totalPages > 1 && (
-        <div className="flex flex-wrap items-center justify-center mt-6 md:mt-8 gap-1 sm:gap-2">
-          <button
-            onClick={goToPreviousPage}
-            disabled={currentPage === 1}
-            className="p-1 sm:p-2 rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors disabled:opacity-50"
-            aria-label="Página anterior"
-          >
-            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-          </button>
+      {/* Modal de confirmación para eliminar favorito */}
+      {isConfirmOpen && (
+        <Dialog open={isConfirmOpen} onOpenChange={cancelRemoveFavorite}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Confirmar eliminación</DialogTitle>
+              <DialogDescription>
+                ¿Estás seguro de quitar esta película de favoritos?
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button onClick={cancelRemoveFavorite}>Cancelar</Button>
+              <Button onClick={confirmRemoveFavorite} variant="destructive">
+                Confirmar
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
 
-          <div className="flex items-center gap-1">
-            {getPageNumbers().map((page, index) =>
-              typeof page === 'number' ? (
-                <button
-                  key={index}
-                  onClick={() => goToPage(page)}
-                  className={`min-w-[2rem] sm:min-w-[2.5rem] h-8 sm:h-10 px-2 sm:px-3 text-sm sm:text-base rounded-md transition-colors ${
-                    page === currentPage
-                      ? 'bg-accent text-accent-foreground'
-                      : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-                  }`}
-                >
-                  {page}
-                </button>
-              ) : (
-                <span key={index} className="px-1 text-muted-foreground">
-                  {page}
-                </span>
-              )
-            )}
+      {filteredAndSortedMovies.length === 0 ? (
+        <div className="py-12 text-center">
+          <p className="text-xl text-muted-foreground">
+            No hay películas que coincidan con los filtros seleccionados.
+          </p>
+          <Button onClick={clearFilters}>Limpiar filtros</Button>
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+            {currentMovies.map((movie) => (
+              <MovieCard
+                key={movie.id}
+                movie={movie}
+                genres={genres}
+                isFavorite={favorites.some((fav) => fav.id === movie.id)}
+                toggleFavorite={handleFavoriteToggle}
+              />
+            ))}
           </div>
 
-          <button
-            onClick={goToNextPage}
-            disabled={currentPage === totalPages}
-            className="p-1 sm:p-2 rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors disabled:opacity-50"
-            aria-label="Página siguiente"
-          >
-            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-          </button>
-        </div>
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center mt-6 gap-2">
+              <Button onClick={goToPreviousPage} disabled={currentPage === 1}>
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              {getPageNumbers().map((page, index) =>
+                typeof page === 'number' ? (
+                  <Button
+                    key={index}
+                    onClick={() => goToPage(page)}
+                    variant={page === currentPage ? 'default' : 'outline'}
+                  >
+                    {page}
+                  </Button>
+                ) : (
+                  <span key={index} className="px-1 text-muted-foreground">
+                    {page}
+                  </span>
+                )
+              )}
+              <Button
+                onClick={goToNextPage}
+                disabled={currentPage === totalPages}
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
