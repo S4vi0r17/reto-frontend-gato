@@ -1,20 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
+import { getMovieByIdAction } from '../actions/movie/get-movie-by-id.action';
+import { SimpleMovieResponse } from '../interfaces/SimpeMovieResponse';
 
-export const useMovie = (id: number) => {
-  const movieQuery = useQuery({
-    queryKey: ['movie', id],
-    queryFn: () => getMovieByIdAction(id),
-    staleTime: 1000 * 60 * 60 * 24, // 24 hours
+export const useMovieDetail = (movieId: string) => {
+  const movieQuery = useQuery<SimpleMovieResponse | null>({
+    queryKey: ['movie', movieId],
+    queryFn: () => getMovieByIdAction(movieId),
+    staleTime: 1000 * 60 * 60 * 24, // 24 horas
+    enabled: !!movieId,
   });
 
-  const movieCastQuery = useQuery({
-    queryKey: ['movie', id, 'cast'],
-    queryFn: () => getMovieCastAction(id),
-    staleTime: 1000 * 60 * 60 * 24, // 24 hours
-  });
-
-  return {
-    movieQuery,
-    movieCastQuery,
-  };
+  return { movieQuery };
 };
