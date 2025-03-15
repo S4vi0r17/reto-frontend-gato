@@ -1,6 +1,6 @@
-import { Film, Heart, ListFilter, Moon, Sun } from 'lucide-react';
 import { Link } from 'react-router';
-import { Movie } from '../../interfaces/movieResponse';
+import { Film, Heart, Moon, Sun } from 'lucide-react';
+import { Movie } from '@/movies/interfaces/movieResponse';
 
 interface Props {
   favorites: Movie[];
@@ -8,7 +8,6 @@ interface Props {
 
 export const NavBar = ({ favorites }: Props) => {
   const favoritesCount = favorites.length;
-  const theme = 'dark';
 
   return (
     <header className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur-sm">
@@ -19,14 +18,6 @@ export const NavBar = ({ favorites }: Props) => {
         </Link>
 
         <div className="flex items-center gap-4">
-          <Link
-            to={'/category'}
-            className="relative inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md hover:bg-secondary transition-colors"
-          >
-            <ListFilter className={`w-5 h-5 fill-accent text-accent`} />
-            <span className="hidden sm:inline">Categorías</span>
-          </Link>
-
           <Link
             to={'/favorites'}
             className="relative inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md hover:bg-secondary transition-colors"
@@ -44,11 +35,12 @@ export const NavBar = ({ favorites }: Props) => {
             className="p-2 rounded-md hover:bg-secondary transition-colors"
             aria-label="Cambiar tema"
           >
-            {theme === 'dark' ? (
+            {/* {theme === 'dark' ? (
               <Sun className="w-5 h-5" />
             ) : (
               <Moon className="w-5 h-5" />
-            )}
+            )} */}
+            <Moon className="w-5 h-5" />
           </button>
         </div>
       </div>
