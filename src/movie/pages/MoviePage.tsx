@@ -1,4 +1,7 @@
-import { useParams, useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
+import { useFavoriteMoviesStore } from '@/movies/stores/favorites.store';
+import { mapCompleteMovieResponseToMovie } from '@/movies/mappers/completemovie-to-movie.mapper';
+import { useMovieDetail } from '../../movie/hooks/useMovie';
 import {
   Heart,
   ArrowLeft,
@@ -7,31 +10,6 @@ import {
   Clock,
   Building,
 } from 'lucide-react';
-import { useMovieDetail } from '../Hooks/useMovie';
-import { useFavoriteMoviesStore } from '../stores/favorites.store';
-import { SimpleMovieResponse } from '../interfaces/SimpeMovieResponse';
-import { Movie } from '../interfaces/movieResponse';
-
-export const mapSimpleMovieResponseToMovie = (
-  response: SimpleMovieResponse
-): Movie => {
-  return {
-    adult: response.adult,
-    backdrop_path: response.backdrop_path ? response.backdrop_path : null,
-    genre_ids: response.genres.map((genre) => genre.id),
-    id: response.id,
-    original_language: response.original_language,
-    original_title: response.original_title,
-    overview: response.overview,
-    popularity: response.popularity,
-    poster_path: response.poster_path,
-    release_date: response.release_date,
-    title: response.title,
-    video: response.video,
-    vote_average: response.vote_average,
-    vote_count: response.vote_count,
-  };
-};
 
 export const MoviePage = () => {
   const navigate = useNavigate();
@@ -213,7 +191,7 @@ export const MoviePage = () => {
                     : 'bg-white/10 hover:bg-white/20 text-white'
                 }`}
                 onClick={() =>
-                  toggleFavorite(mapSimpleMovieResponseToMovie(movie))
+                  toggleFavorite(mapCompleteMovieResponseToMovie(movie))
                 }
               >
                 <Heart

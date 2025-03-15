@@ -1,9 +1,9 @@
 import { BrowserRouter, Route, Routes } from 'react-router';
-import { HomePage } from '../movies/pages/HomePage';
-import { NotFoundPage } from '../common/pages/NotFoundPage';
-import { FavoritesPage } from '../movies/pages/FavoritesPage';
 import { MainLayout } from '@/movies/layouts/MainLayout';
-import { MoviePage } from '@/movies/pages/MoviePage';
+import { MoviePage } from '@/movie/pages/MoviePage';
+import { HomePage } from '@/movies/pages/HomePage';
+import { FavoritesPage } from '@/movies/pages/FavoritesPage';
+import { NotFoundPage } from '@/common';
 
 const TMBDRouter = () => {
   return (

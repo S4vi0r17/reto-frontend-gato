@@ -1,4 +1,8 @@
-export interface SimpleMovieResponse {
+import { ProductionCompany } from "./production-company.interface";
+import { ProductionCountry } from "./production-country.interface";
+import { SpokenLanguage } from "./spoken-language.interface";
+
+export interface CompleteMovieResponse {
     adult:                 boolean;
     backdrop_path:         string;
     belongs_to_collection: null;
@@ -27,25 +31,7 @@ export interface SimpleMovieResponse {
     vote_count:            number;
 }
 
-export interface Genre {
+interface Genre {
     id:   number;
     name: string;
-}
-
-export interface ProductionCompany {
-    id:             number;
-    logo_path:      string;
-    name:           string;
-    origin_country: string;
-}
-
-export interface ProductionCountry {
-    iso_3166_1: string;
-    name:       string;
-}
-
-export interface SpokenLanguage {
-    english_name: string;
-    iso_639_1:    string;
-    name:         string;
 }

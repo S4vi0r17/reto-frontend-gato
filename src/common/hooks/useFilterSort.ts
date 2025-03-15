@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import type { Movie } from '../interfaces/movieResponse';
+import type { Movie } from '../../movies/interfaces/movieResponse';
 
 export type SortOption = 'popularity' | 'rating' | 'date' | 'none';
 

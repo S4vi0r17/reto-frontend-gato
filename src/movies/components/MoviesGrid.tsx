@@ -6,11 +6,12 @@ import {
   SortAsc,
   Check,
   ChevronDown,
+  RefreshCcwDot,
 } from 'lucide-react';
 import type { Genre, Movie } from '../interfaces/movieResponse';
 import { usePagination } from '@/common';
 import { useFavoriteModal } from '../Hooks/useFavoriteModal';
-import { useFilterSort } from '../Hooks/useFilterSort';
+import { useFilterSort } from '../../common/hooks/useFilterSort';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -27,6 +28,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { MovieCard } from '@/movie/components/MovieCard';
+import { useNavigate } from 'react-router';
 
 interface Props {
   genres: Genre[];
@@ -36,13 +38,15 @@ interface Props {
   itemsPerPage?: number;
 }
 
-export default function MovieGrid({
+export const MoviesGrid = ({
   genres,
   favorites,
   toggleFavorite,
   title,
   itemsPerPage = 12,
-}: Props) {
+}: Props) => {
+  const navigate = useNavigate();
+
   const {
     isConfirmOpen,
     openModalForFavorite,
@@ -106,9 +110,9 @@ export default function MovieGrid({
 
   return (
     <div className="w-full px-4 py-8 mx-auto sm:container sm:px-6 md:px-8">
-      {title && <h2 className="text-xl font-bold sm:text-2xl mb-4">{title}</h2>}
+      <div className="flex flex-col sm:flex-row justify-between gap-3 mb-6">
+        <h2 className="text-xl font-bold sm:text-2xl mb-4">{title}</h2>
 
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
         {/* Dropdown de Ordenamiento */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -185,6 +189,14 @@ export default function MovieGrid({
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
+        <Button
+          variant="outline"
+          onClick={() => navigate(0)}
+          className="w-full sm:w-[180px]"
+        >
+          <RefreshCcwDot className="h-4 w-4" />
+          Refrescar
+        </Button>
       </div>
 
       {/* Modal de confirmación para eliminar favorito */}
@@ -217,7 +229,7 @@ export default function MovieGrid({
       ) : (
         <>
           <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-            {currentMovies.map((movie) => (
+            {[...currentMovies].reverse().map((movie) => (
               <MovieCard
                 key={movie.id}
                 movie={movie}
@@ -230,7 +242,11 @@ export default function MovieGrid({
 
           {totalPages > 1 && (
             <div className="flex items-center justify-center mt-6 gap-2">
-              <Button onClick={goToPreviousPage} disabled={currentPage === 1}>
+              <Button
+                onClick={goToPreviousPage}
+                disabled={currentPage === 1}
+                className="bg-gray-200 text-gray-600 hover:bg-gray-300 disabled:bg-gray-100 disabled:text-gray-400"
+              >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
               {getPageNumbers().map((page, index) =>
@@ -238,12 +254,16 @@ export default function MovieGrid({
                   <Button
                     key={index}
                     onClick={() => goToPage(page)}
-                    variant={page === currentPage ? 'default' : 'outline'}
+                    className={`${
+                      page === currentPage
+                        ? 'bg-accent hover:bg-accent/70 text-white'
+                        : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                    }`}
                   >
                     {page}
                   </Button>
                 ) : (
-                  <span key={index} className="px-1 text-muted-foreground">
+                  <span key={index} className="px-1 text-gray-500">
                     {page}
                   </span>
                 )
@@ -251,6 +271,7 @@ export default function MovieGrid({
               <Button
                 onClick={goToNextPage}
                 disabled={currentPage === totalPages}
+                className="bg-gray-200 text-gray-600 hover:bg-gray-300 disabled:bg-gray-100 disabled:text-gray-400"
               >
                 <ChevronRight className="w-4 h-4" />
               </Button>
@@ -260,4 +281,4 @@ export default function MovieGrid({
       )}
     </div>
   );
-}
+};

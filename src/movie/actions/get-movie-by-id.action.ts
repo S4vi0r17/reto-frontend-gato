@@ -1,9 +1,9 @@
-import { movieApi } from '../api/movie-api';
-import { SimpleMovieResponse } from '../../interfaces/SimpeMovieResponse';
+import { movieApi } from '@/movies/actions/api/movie-api';
+import { CompleteMovieResponse } from '../interfaces';
 
 export const getMovieByIdAction = async (
   id: string
-): Promise<SimpleMovieResponse | null> => {
+): Promise<CompleteMovieResponse | null> => {
   try {
     const response = await movieApi.get(`/movie/${id}`);
     return response.data;
