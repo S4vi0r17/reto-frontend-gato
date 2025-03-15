@@ -1,104 +1,93 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 
-interface UsePaginationProps {
+interface Options {
   totalItems: number;
   itemsPerPage: number;
   initialPage?: number;
-}
-
-interface UsePaginationReturn {
-  currentPage: number;
-  totalPages: number;
-  goToNextPage: () => void;
-  goToPreviousPage: () => void;
-  goToPage: (page: number) => void;
-  getPageNumbers: () => (number | string)[];
-  currentItems: (startIndex: number, endIndex: number) => number[];
+  maxPageNumbers?: number;
 }
 
 export function usePagination({
   totalItems,
   itemsPerPage,
   initialPage = 1,
-}: UsePaginationProps): UsePaginationReturn {
+  maxPageNumbers = 5,
+}: Options) {
   const [currentPage, setCurrentPage] = useState(initialPage);
 
-  // Calcular el número total de páginas
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const totalPages = useMemo(() => {
+    return Math.max(1, Math.ceil(totalItems / itemsPerPage));
+  }, [totalItems, itemsPerPage]);
 
-  // Asegurarse de que la página actual sea válida si cambia el total de páginas
+  // Asegurarse de que la página actual es válida cuando cambia el total de páginas
   useEffect(() => {
-    if (currentPage > totalPages && totalPages > 0) {
+    if (currentPage > totalPages) {
       setCurrentPage(totalPages);
     }
   }, [totalPages, currentPage]);
 
-  // Obtener los índices de los elementos actuales
-  const currentItems = (startIndex: number, endIndex: number) =>
-    Array.from({ length: endIndex - startIndex }, (_, i) => startIndex + i);
+  const goToNextPage = useCallback(() => {
+    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
+  }, [totalPages]);
 
-  // Ir a la página anterior
-  const goToPreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
-  // Ir a la página siguiente
-  const goToNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
+  const goToPreviousPage = useCallback(() => {
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+  }, []);
 
   // Ir a una página específica
-  const goToPage = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+  const goToPage = useCallback(
+    (page: number) => {
+      const pageNumber = Math.max(1, Math.min(page, totalPages));
+      setCurrentPage(pageNumber);
+    },
+    [totalPages]
+  );
+
+  // Resetear a la primera página
+  const resetToFirstPage = useCallback(() => {
+    setCurrentPage(1);
+  }, []);
+
+  // Generar los números de página para mostrar
+  const getPageNumbers = useCallback(() => {
+    if (totalPages <= maxPageNumbers) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
     }
-  };
 
-  // Generar array de páginas para mostrar en la paginación
-  const getPageNumbers = () => {
-    const pageNumbers: (number | string)[] = [];
-    const maxPagesToShow = 5;
+    const halfMaxPages = Math.floor(maxPageNumbers / 2);
+    let startPage = Math.max(currentPage - halfMaxPages, 1);
+    let endPage = startPage + maxPageNumbers - 1;
 
-    if (totalPages <= maxPagesToShow) {
-      // Si hay pocas páginas, mostrar todas
-      for (let i = 1; i <= totalPages; i++) {
-        pageNumbers.push(i);
-      }
-    } else {
-      // Mostrar un subconjunto de páginas centrado en la página actual
-      let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
-      let endPage = startPage + maxPagesToShow - 1;
+    if (endPage > totalPages) {
+      endPage = totalPages;
+      startPage = Math.max(endPage - maxPageNumbers + 1, 1);
+    }
 
-      if (endPage > totalPages) {
-        endPage = totalPages;
-        startPage = Math.max(1, endPage - maxPagesToShow + 1);
-      }
+    const pages = [];
 
-      for (let i = startPage; i <= endPage; i++) {
-        pageNumbers.push(i);
-      }
-
-      // Añadir indicadores de "más páginas" si es necesario
-      if (startPage > 1) {
-        pageNumbers.unshift('...');
-        pageNumbers.unshift(1);
-      }
-
-      if (endPage < totalPages) {
-        pageNumbers.push('...');
-        pageNumbers.push(totalPages);
+    // Añadir primera página y elipsis si es necesario
+    if (startPage > 1) {
+      pages.push(1);
+      if (startPage > 2) {
+        pages.push('...');
       }
     }
 
-    return pageNumbers;
-  };
+    // Añadir páginas intermedias
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+
+    // Añadir última página y elipsis si es necesario
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        pages.push('...');
+      }
+      pages.push(totalPages);
+    }
+
+    return pages;
+  }, [currentPage, totalPages, maxPageNumbers]);
 
   return {
     currentPage,
@@ -107,6 +96,6 @@ export function usePagination({
     goToPreviousPage,
     goToPage,
     getPageNumbers,
-    currentItems,
+    resetToFirstPage,
   };
 }
