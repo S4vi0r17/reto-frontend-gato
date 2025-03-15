@@ -7,7 +7,6 @@ import {
   Check,
   ChevronDown,
 } from 'lucide-react';
-import MovieCard from './MovieCard';
 import type { Genre, Movie } from '../interfaces/movieResponse';
 import { usePagination } from '@/common';
 import { useFavoriteModal } from '../Hooks/useFavoriteModal';
@@ -27,6 +26,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { MovieCard } from '@/movie/components/MovieCard';
 
 interface Props {
   genres: Genre[];

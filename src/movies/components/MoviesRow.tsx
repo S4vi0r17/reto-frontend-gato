@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { Movie, Genre } from '../interfaces/movieResponse';
-import MovieCard from './MovieCard';
+import { MovieCard } from '@/movie/components/MovieCard';
 
 interface Props {
   title: string;

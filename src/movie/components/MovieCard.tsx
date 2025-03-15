@@ -1,5 +1,6 @@
 import { Heart, Star } from 'lucide-react';
-import { Genre, Movie } from '../interfaces/movieResponse';
+import { Genre, Movie } from '@/movies/interfaces/movieResponse';
+import { formatDate } from '@/common/helpers';
 
 interface Props {
   movie: Movie;
@@ -8,28 +9,16 @@ interface Props {
   toggleFavorite: (movie: Movie) => void;
 }
 
-export default function MovieCard({
+export const MovieCard = ({
   movie,
   genres,
   isFavorite,
   toggleFavorite,
-}: Props) {
+}: Props) => {
   const movieGenres = genres
     .filter((genre) => movie.genre_ids.includes(genre.id))
     .map((genre) => genre.name)
     .slice(0, 2);
-
-  // Formatear la fecha
-  const formatDate = (dateString: Date) => {
-    if (!dateString) return 'Fecha desconocida';
-
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('es-ES', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    }).format(date);
-  };
 
   return (
     <div className="flex flex-col h-full overflow-hidden transition-all duration-300 bg-background border rounded-lg shadow-sm hover:shadow-md group">
@@ -70,7 +59,7 @@ export default function MovieCard({
             {movieGenres.map((genre) => (
               <span
                 key={genre}
-                className="px-2 py-0.5 text-xs rounded-full bg-secondary text-secondary-foreground"
+                className="px-2 py-0.5 text-xs rounded-full bg-accent/50 text-secondary-foreground"
               >
                 {genre}
               </span>
@@ -95,4 +84,4 @@ export default function MovieCard({
       </div>
     </div>
   );
-}
+};
