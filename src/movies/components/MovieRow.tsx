@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import MovieCard from './MovieCard';
-import { Genre, Movie } from '../../interfaces/movieResponse';
+import { Movie, Genre } from '../interfaces/movieResponse';
+import { Link } from 'react-router';
 
 interface MovieRowProps {
   movies: Movie[];
@@ -116,7 +117,8 @@ export default function MovieRow({
         onScroll={handleScroll}
       >
         {movies.map((movie, index) => (
-          <div
+          <Link
+            to={`/movie/${movie.id}`}
             key={`${movie.id}-${index}`}
             className="flex-shrink-0 w-[220px] snap-start"
           >
@@ -126,7 +128,7 @@ export default function MovieRow({
               isFavorite={favorites.some((fav) => fav.id === movie.id)}
               toggleFavorite={toggleFavorite}
             />
-          </div>
+          </Link>
         ))}
 
         {/* Indicador de carga solo para infinite scroll */}

@@ -50,7 +50,11 @@ export default function MovieCard({
         <button
           className="absolute top-2 right-2 p-2 bg-background/80 backdrop-blur-sm rounded-full transition-colors hover:bg-background"
           aria-label={isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'}
-          onClick={() => toggleFavorite(movie)}
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            toggleFavorite(movie);
+          }}
         >
           <Heart
             className={`w-5 h-5 ${isFavorite ? 'fill-accent text-accent' : ''}`}
