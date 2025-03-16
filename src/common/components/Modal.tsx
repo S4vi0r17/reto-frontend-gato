@@ -1,5 +1,5 @@
 import { X } from 'lucide-react';
-import { Movie } from '../../interfaces/movieResponse';
+import { Movie } from '@/movies/interfaces/movieResponse';
 
 interface Props {
   cancelRemoveFavorite: () => void;
