@@ -31,6 +31,11 @@ Puedes ver la aplicación en vivo en: [https://reto-frontend-gato.vercel.app/](h
 - **Bun** para la gestión de dependencias y ejecución
 - **Docker** (opcional) para despliegue en contenedor
 
+## Wireframe y Diseño
+
+![Wireframe de la aplicación](./public/diseño.svg)
+Se utilizó Excalidraw para realizar el wireframe de la aplicación. El diseño es sencillo y minimalista. Puedes ver el diseño en el siguiente enlace: [Wireframe en Excalidraw](https://excalidraw.com/#json=BsvMQ8HLOplkwJ2W-UoJa,WIsJiky19pqfQBr4MjVqrw).
+
 ## Estructura del Proyecto
 
 El proyecto se organiza en 4 módulos principales:
