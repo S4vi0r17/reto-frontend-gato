@@ -25,7 +25,8 @@ Puedes ver la aplicación en vivo en: [https://reto-frontend-gato.vercel.app/](h
 - **React** con **Vite** y **TypeScript**
 - **react-router** para la navegación de la SPA
 - **axios** para el consumo de la API
-- **shadcn** y **zustand** para el manejo del estado y la UI
+- **tanstack** para el manejo de peticiones y caché
+- **shadcn** y **zustand** para el manejo de la UI y estado
 - **Tailwind CSS** y **lucide-react** para estilos e íconos
 - **Bun** para la gestión de dependencias y ejecución
 - **Docker** (opcional) para despliegue en contenedor
