@@ -1,17 +1,9 @@
-import { useEffect } from 'react';
-import {
-  ChevronLeft,
-  ChevronRight,
-  Filter,
-  SortAsc,
-  Check,
-  ChevronDown,
-  RefreshCcwDot,
-} from 'lucide-react';
-import type { Genre, Movie } from '../interfaces/movieResponse';
+import { useEffect, useState } from 'react';
 import { usePagination } from '@/common';
 import { useFavoriteModal } from '../Hooks/useFavoriteModal';
 import { useFilterSort } from '../../common/hooks/useFilterSort';
+import { MovieCard } from '@/movie/components/MovieCard';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -26,9 +18,16 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { MovieCard } from '@/movie/components/MovieCard';
-import { useNavigate } from 'react-router';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Filter,
+  SortAsc,
+  Check,
+  ChevronDown,
+  RefreshCcwDot,
+} from 'lucide-react';
+import type { Genre, Movie } from '../interfaces/movieResponse';
 
 interface Props {
   genres: Genre[];
@@ -45,7 +44,7 @@ export const MoviesGrid = ({
   title,
   itemsPerPage = 12,
 }: Props) => {
-  const navigate = useNavigate();
+  const [refreshing, setRefreshing] = useState(false);
 
   const {
     isConfirmOpen,
@@ -96,6 +95,14 @@ export const MoviesGrid = ({
     } else {
       toggleFavorite(movie);
     }
+  };
+
+  const refreshPage = () => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+    window.location.reload()
   };
 
   if (favorites.length === 0) {
@@ -191,10 +198,12 @@ export const MoviesGrid = ({
         </DropdownMenu>
         <Button
           variant="outline"
-          onClick={() => navigate(0)}
+          onClick={refreshPage}
           className="w-full sm:w-[180px]"
         >
-          <RefreshCcwDot className="h-4 w-4" />
+          <RefreshCcwDot
+            className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`}
+          />
           Refrescar
         </Button>
       </div>
