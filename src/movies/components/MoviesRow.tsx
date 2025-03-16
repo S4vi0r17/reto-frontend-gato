@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router';
-import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
-import { Movie, Genre } from '../interfaces/movieResponse';
 import { MovieCard } from '@/movie/components/MovieCard';
+import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Movie, Genre } from '../interfaces/movieResponse';
 
 interface Props {
   title: string;
@@ -121,18 +120,13 @@ export const MoviesRow = ({
           onScroll={handleScroll}
         >
           {movies.map((movie, index) => (
-            <Link
-              to={`/movie/${movie.id}`}
+            <MovieCard
               key={`${movie.id}-${index}`}
-              className="flex-shrink-0 w-[220px] snap-start"
-            >
-              <MovieCard
-                movie={movie}
-                genres={genres}
-                isFavorite={favorites.some((fav) => fav.id === movie.id)}
-                toggleFavorite={toggleFavorite}
-              />
-            </Link>
+              movie={movie}
+              genres={genres}
+              isFavorite={favorites.some((fav) => fav.id === movie.id)}
+              toggleFavorite={toggleFavorite}
+            />
           ))}
 
           {/* Indicador de carga solo para infinite scroll */}

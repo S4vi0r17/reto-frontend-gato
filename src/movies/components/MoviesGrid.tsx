@@ -236,6 +236,7 @@ export const MoviesGrid = ({
                 genres={genres}
                 isFavorite={favorites.some((fav) => fav.id === movie.id)}
                 toggleFavorite={handleFavoriteToggle}
+                homePage={false}
               />
             ))}
           </div>

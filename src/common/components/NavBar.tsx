@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { Film, Heart, Moon, Sun } from 'lucide-react';
+import { Cat, Film, Heart } from 'lucide-react';
 import { Movie } from '@/movies/interfaces/movieResponse';
 
 interface Props {
@@ -15,6 +15,7 @@ export const NavBar = ({ favorites }: Props) => {
         <Link to={'/'} className="flex items-center gap-2">
           <Film className="w-8 h-8 text-accent" />
           <span className="text-xl font-bold">Gato Movies</span>
+          <Cat className="w-8 h-8 text-accent" />
         </Link>
 
         <div className="flex items-center gap-4">
@@ -30,18 +31,6 @@ export const NavBar = ({ favorites }: Props) => {
               </span>
             )}
           </Link>
-
-          <button
-            className="p-2 rounded-md hover:bg-secondary transition-colors"
-            aria-label="Cambiar tema"
-          >
-            {/* {theme === 'dark' ? (
-              <Sun className="w-5 h-5" />
-            ) : (
-              <Moon className="w-5 h-5" />
-            )} */}
-            <Moon className="w-5 h-5" />
-          </button>
         </div>
       </div>
     </header>
